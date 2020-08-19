@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prometheus
+  labels:
+    env: metrics
+spec:
+  selector:
+    matchLabels:
+      env: metrics
+  template:
+    metadata:
+      name: prometheus
+      labels:
+        env: metrics
+    spec:
+      containers:
+      - image: shirsha30/prometheus:v1
+        name: prom
+        args:
+        - '--config.file=/prometheus.yml'
+        ports:
+        - containerPort: 9090
+        volumeMounts:
+        - name: prometheus-persistent-storage-store
+          mountPath: prometheus_data/
+        - name: prometheus-script
+          mountPath: /prometheus.yml
+          subPath: prometheus.yml  
+      volumes:
+      - name: prometheus-persistent-storage-store
+        persistentVolumeClaim:
+          claimName: prom-store-pvc
+      - name: prometheus-script
+        configMap:
+          name: prom-script

@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grafana-server
+spec:
+  selector:
+    matchLabels:
+       env: visuals
+  template:
+    metadata:
+     name: grafana-server
+     labels:
+       env: visuals
+    spec:
+      containers:
+      - name: grafana
+        image: shirsha30/grafana:v1
+        ports:
+        - containerPort: 3000
+        volumeMounts:
+        - name: grafana-pvc
+          mountPath: /var/lib/grafana/
+      volumes:
+      - name: grafana-pvc
+        persistentVolumeClaim:
+          claimName: grafana-store-pvc
